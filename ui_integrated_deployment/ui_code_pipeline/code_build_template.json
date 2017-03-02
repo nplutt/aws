@@ -1,0 +1,99 @@
+{
+    "AWSTemplateFormatVersion": "2010-09-09",
+    "Description": "This CloudFormation template creates a build pipeline for an angular2 build.",
+    "Resources": {
+        "UICodeBuildPolicy": {
+            "Properties": {
+                "PolicyDocument": {
+                    "Statement": [
+                        {
+                            "Action": [
+                                "logs:CreateLogGroup",
+                                "logs:CreateLogStream",
+                                "logs:PutLogEvents"
+                            ],
+                            "Effect": "Allow",
+                            "Resource": [
+                                "arn:aws:logs:us-west-2:562628674386:log-group:/aws/codebuild/angular2build",
+                                "arn:aws:logs:us-west-2:562628674386:log-group:/aws/codebuild/angular2build:*"
+                            ]
+                        },
+                        {
+                            "Action": [
+                                "s3:PutObject",
+                                "s3:GetObject",
+                                "s3:GetObjectVersion"
+                            ],
+                            "Effect": "Allow",
+                            "Resource": [
+                                "arn:aws:s3:::npluttcode1/*"
+                            ]
+                        }
+                    ],
+                    "Version": "2012-10-17"
+                },
+                "Roles": [
+                    {
+                        "Ref": "UICodeBuildRole"
+                    }
+                ]
+            },
+            "Type": "AWS::IAM::ManagedPolicy"
+        },
+        "UICodeBuildProfile": {
+            "Properties": {
+                "Path": "/service-role/",
+                "Roles": [
+                    {
+                        "Ref": "UICodeBuildRole"
+                    }
+                ]
+            },
+            "Type": "AWS::IAM::InstanceProfile"
+        },
+        "UICodeBuildRole": {
+            "Properties": {
+                "AssumeRolePolicyDocument": {
+                    "Statement": [
+                        {
+                            "Action": [
+                                "sts:AssumeRole"
+                            ],
+                            "Effect": "Allow",
+                            "Principal": {
+                                "Service": [
+                                    "codebuild.amazonaws.com"
+                                ]
+                            }
+                        }
+                    ]
+                }
+            },
+            "Type": "AWS::IAM::Role"
+        },
+        "angular2build": {
+            "Properties": {
+                "Artifacts": {
+                    "Location": "npluttcode1",
+                    "Name": "angular2build",
+                    "Type": "S3"
+                },
+                "Environment": {
+                    "ComputeType": "BUILD_GENERAL1_SMALL",
+                    "Image": "nplutt/front-end-build-server:latest",
+                    "Type": "LINUX_CONTAINER"
+                },
+                "Name": "angular2build",
+                "ServiceRole": {
+                    "Ref": "UICodeBuildRole"
+                },
+                "Source": {
+                    "Location": "https://github.com/nplutt/angular2-seed.git",
+                    "Type": "GITHUB"
+                },
+                "TimeoutInMinutes": 5
+            },
+            "Type": "AWS::CodeBuild::Project"
+        }
+    }
+}

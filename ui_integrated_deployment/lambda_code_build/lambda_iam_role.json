@@ -1,0 +1,63 @@
+{
+    "AWSTemplateFormatVersion": "2010-09-09",
+    "Description": "This CloudFormation template creates a build for an angular2 build.",
+    "Resources": {
+        "S3UnzipPolicy": {
+            "Properties": {
+                "PolicyDocument": {
+                    "Statement": [
+                        {
+                            "Action": [
+                                "s3:*"
+                            ],
+                            "Effect": "Allow",
+                            "Resource": [
+                                "arn:aws:s3:::npluttwebsite1/*",
+                                "arn:aws:s3:::npluttcode1/*"
+                            ]
+                        }
+                    ],
+                    "Version": "2012-10-17"
+                },
+                "Roles": [
+                    {
+                        "Ref": "S3UnzipRole"
+                    }
+                ]
+            },
+            "Type": "AWS::IAM::ManagedPolicy"
+        },
+        "S3UnzipProfile": {
+            "Properties": {
+                "Path": "/service-role/",
+                "Roles": [
+                    {
+                        "Ref": "S3UnzipRole"
+                    }
+                ]
+            },
+            "Type": "AWS::IAM::InstanceProfile"
+        },
+        "S3UnzipRole": {
+            "Properties": {
+                "AssumeRolePolicyDocument": {
+                    "Statement": [
+                        {
+                            "Action": [
+                                "sts:AssumeRole"
+                            ],
+                            "Effect": "Allow",
+                            "Principal": {
+                                "Service": [
+                                    "lambda.amazonaws.com"
+                                ]
+                            }
+                        }
+                    ]
+                },
+                "RoleName": "S3UnzipRole"
+            },
+            "Type": "AWS::IAM::Role"
+        }
+    }
+}
