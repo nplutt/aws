@@ -1,0 +1,140 @@
+{
+    "AWSTemplateFormatVersion": "2010-09-09",
+    "Description": "This CloudFormation template creates a build for the apartments main ui.",
+    "Resources": {
+        "PersonalWebsiteUI": {
+            "Properties": {
+                "Artifacts": {
+                    "Location": "nick.plutt.artifacts",
+                    "Name": "PersonalWebsiteUI",
+                    "Packaging": "zip",
+                    "Type": "S3"
+                },
+                "Environment": {
+                    "ComputeType": "BUILD_GENERAL1_SMALL",
+                    "EnvironmentVariables": [
+                        {
+                            "Name": "CHROME_BIN",
+                            "Value": "/serverless-chrome/chrome/headless-chrome/headless_shell"
+                        },
+                        {
+                            "Name": "BUCKET",
+                            "Value": "nickplutt.com"
+                        }
+                    ],
+                    "Image": "nplutt/ubuntu-docker-build",
+                    "Type": "LINUX_CONTAINER"
+                },
+                "Name": "PersonalWebsiteUI",
+                "ServiceRole": {
+                    "Ref": "PersonalWebsiteUIBuildRole"
+                },
+                "Source": {
+                    "Location": "https://github.com/nplutt/personal-website.git",
+                    "Type": "GITHUB"
+                },
+                "TimeoutInMinutes": 10
+            },
+            "Type": "AWS::CodeBuild::Project"
+        },
+        "PersonalWebsiteUIBuildPolicy": {
+            "Properties": {
+                "PolicyDocument": {
+                    "Statement": [
+                        {
+                            "Action": [
+                                "logs:CreateLogGroup",
+                                "logs:CreateLogStream",
+                                "logs:PutLogEvents"
+                            ],
+                            "Effect": "Allow",
+                            "Resource": [
+                                {
+                                    "Fn::Join": [
+                                        ":",
+                                        [
+                                            "arn:aws:logs",
+                                            {
+                                                "Ref": "AWS::Region"
+                                            },
+                                            {
+                                                "Ref": "AWS::AccountId"
+                                            },
+                                            "log-group:/aws/codebuild/PersonalWebsiteUI"
+                                        ]
+                                    ]
+                                },
+                                {
+                                    "Fn::Join": [
+                                        ":",
+                                        [
+                                            "arn:aws:logs",
+                                            {
+                                                "Ref": "AWS::Region"
+                                            },
+                                            {
+                                                "Ref": "AWS::AccountId"
+                                            },
+                                            "log-group:/aws/codebuild/PersonalWebsiteUI",
+                                            "*"
+                                        ]
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "Action": [
+                                "s3:PutObject",
+                                "s3:GetObject",
+                                "s3:GetObjectVersion"
+                            ],
+                            "Effect": "Allow",
+                            "Resource": [
+                                "arn:aws:s3:::nick.plutt.artifacts/*",
+                                "arn:aws:s3:::nickplutt.com/*"
+                            ]
+                        }
+                    ],
+                    "Version": "2012-10-17"
+                },
+                "Roles": [
+                    {
+                        "Ref": "PersonalWebsiteUIBuildRole"
+                    }
+                ]
+            },
+            "Type": "AWS::IAM::ManagedPolicy"
+        },
+        "PersonalWebsiteUIBuildProfile": {
+            "Properties": {
+                "Path": "/service-role/",
+                "Roles": [
+                    {
+                        "Ref": "PersonalWebsiteUIBuildRole"
+                    }
+                ]
+            },
+            "Type": "AWS::IAM::InstanceProfile"
+        },
+        "PersonalWebsiteUIBuildRole": {
+            "Properties": {
+                "AssumeRolePolicyDocument": {
+                    "Statement": [
+                        {
+                            "Action": [
+                                "sts:AssumeRole"
+                            ],
+                            "Effect": "Allow",
+                            "Principal": {
+                                "Service": [
+                                    "codebuild.amazonaws.com"
+                                ]
+                            }
+                        }
+                    ]
+                }
+            },
+            "Type": "AWS::IAM::Role"
+        }
+    }
+}

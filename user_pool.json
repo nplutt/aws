@@ -1,0 +1,43 @@
+{
+    "AWSTemplateFormatVersion": "2010-09-09",
+    "Description": "This cloudformation template creates a cognito user pool",
+    "Resources": {
+        "apartments": {
+            "Properties": {
+                "AutoVerifiedAttributes": [
+                    "email"
+                ],
+                "EmailVerificationMessage": "Your verification code is {####}.",
+                "EmailVerificationSubject": "Your verification code",
+                "Policies": {
+                    "PasswordPolicy": {
+                        "MinimumLength": 8,
+                        "RequireLowercase": "true",
+                        "RequireNumbers": "true",
+                        "RequireSymbols": "true",
+                        "RequireUppercase": "true"
+                    }
+                },
+                "Schema": [
+                    {
+                        "Name": "email",
+                        "Required": "true"
+                    }
+                ],
+                "UserPoolName": "apartments"
+            },
+            "Type": "AWS::Cognito::UserPool"
+        },
+        "web": {
+            "Properties": {
+                "ClientName": "web",
+                "GenerateSecret": "false",
+                "RefreshTokenValidity": 30,
+                "UserPoolId": {
+                    "Ref": "apartments"
+                }
+            },
+            "Type": "AWS::Cognito::UserPoolClient"
+        }
+    }
+}

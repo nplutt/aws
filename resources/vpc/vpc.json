@@ -1,0 +1,237 @@
+{
+    "AWSTemplateFormatVersion": "2010-09-09",
+    "Description": "AWS cloud formation script template.at creates a VPC with a NAT Gg",
+    "Outputs": {
+        "PrivateSubnet0": {
+            "Description": "Subnet Id",
+            "Value": {
+                "Ref": "PrivateSubnetCidr0"
+            }
+        },
+        "PrivateSubnet1": {
+            "Description": "Subnet Id",
+            "Value": {
+                "Ref": "PrivateSubnetCidr1"
+            }
+        },
+        "PublicSubnet0": {
+            "Description": "Subnet Id",
+            "Value": {
+                "Ref": "PublicSubnetCidr0"
+            }
+        },
+        "PublicSubnet1": {
+            "Description": "Subnet Id",
+            "Value": {
+                "Ref": "PublicSubnetCidr1"
+            }
+        },
+        "VPCId": {
+            "Description": "VPC Id",
+            "Value": {
+                "Ref": "VPC"
+            }
+        }
+    },
+    "Parameters": {
+        "PrivateSubnetCidr0": {
+            "Default": "192.168.1.0/24",
+            "Description": "Private Subnet CIDR",
+            "Type": "String"
+        },
+        "PrivateSubnetCidr1": {
+            "Default": "192.168.4.0/24",
+            "Description": "Private Subnet CIDR",
+            "Type": "String"
+        },
+        "PublicSubnetCidr0": {
+            "Default": "192.168.0.0/24",
+            "Description": "Public Subnet CIDR",
+            "Type": "String"
+        },
+        "PublicSubnetCidr1": {
+            "Default": "192.168.3.0/24",
+            "Description": "Public Subnet CIDR",
+            "Type": "String"
+        },
+        "VPCCIDR": {
+            "Default": "192.168.0.0/20",
+            "Description": "The IP address space for this VPC, in CIDR notation",
+            "Type": "String"
+        }
+    },
+    "Resources": {
+        "InternetGateway": {
+            "Type": "AWS::EC2::InternetGateway"
+        },
+        "NatAttachment": {
+            "Properties": {
+                "InternetGatewayId": {
+                    "Ref": "InternetGateway"
+                },
+                "VpcId": {
+                    "Ref": "VPC"
+                }
+            },
+            "Type": "AWS::EC2::VPCGatewayAttachment"
+        },
+        "PrivateRouteAssociation0": {
+            "Properties": {
+                "RouteTableId": {
+                    "Ref": "PrivateRouteTable0"
+                },
+                "SubnetId": {
+                    "Ref": "PrivateSubnet0"
+                }
+            },
+            "Type": "AWS::EC2::SubnetRouteTableAssociation"
+        },
+        "PrivateRouteAssociation1": {
+            "Properties": {
+                "RouteTableId": {
+                    "Ref": "PrivateRouteTable1"
+                },
+                "SubnetId": {
+                    "Ref": "PrivateSubnet1"
+                }
+            },
+            "Type": "AWS::EC2::SubnetRouteTableAssociation"
+        },
+        "PrivateRouteTable0": {
+            "Properties": {
+                "VpcId": {
+                    "Ref": "VPC"
+                }
+            },
+            "Type": "AWS::EC2::RouteTable"
+        },
+        "PrivateRouteTable1": {
+            "Properties": {
+                "VpcId": {
+                    "Ref": "VPC"
+                }
+            },
+            "Type": "AWS::EC2::RouteTable"
+        },
+        "PrivateSubnet0": {
+            "Properties": {
+                "CidrBlock": {
+                    "Ref": "PrivateSubnetCidr0"
+                },
+                "MapPublicIpOnLaunch": "false",
+                "VpcId": {
+                    "Ref": "VPC"
+                }
+            },
+            "Type": "AWS::EC2::Subnet"
+        },
+        "PrivateSubnet1": {
+            "Properties": {
+                "CidrBlock": {
+                    "Ref": "PrivateSubnetCidr1"
+                },
+                "MapPublicIpOnLaunch": "false",
+                "VpcId": {
+                    "Ref": "VPC"
+                }
+            },
+            "Type": "AWS::EC2::Subnet"
+        },
+        "PublicDefaultRoute0": {
+            "Properties": {
+                "DestinationCidrBlock": "0.0.0.0/0",
+                "GatewayId": {
+                    "Ref": "InternetGateway"
+                },
+                "RouteTableId": {
+                    "Ref": "PublicRouteTable0"
+                }
+            },
+            "Type": "AWS::EC2::Route"
+        },
+        "PublicDefaultRoute1": {
+            "Properties": {
+                "DestinationCidrBlock": "0.0.0.0/0",
+                "GatewayId": {
+                    "Ref": "InternetGateway"
+                },
+                "RouteTableId": {
+                    "Ref": "PublicRouteTable1"
+                }
+            },
+            "Type": "AWS::EC2::Route"
+        },
+        "PublicRouteAssociation0": {
+            "Properties": {
+                "RouteTableId": {
+                    "Ref": "PublicRouteTable0"
+                },
+                "SubnetId": {
+                    "Ref": "PublicSubnet0"
+                }
+            },
+            "Type": "AWS::EC2::SubnetRouteTableAssociation"
+        },
+        "PublicRouteAssociation1": {
+            "Properties": {
+                "RouteTableId": {
+                    "Ref": "PublicRouteTable1"
+                },
+                "SubnetId": {
+                    "Ref": "PublicSubnet1"
+                }
+            },
+            "Type": "AWS::EC2::SubnetRouteTableAssociation"
+        },
+        "PublicRouteTable0": {
+            "Properties": {
+                "VpcId": {
+                    "Ref": "VPC"
+                }
+            },
+            "Type": "AWS::EC2::RouteTable"
+        },
+        "PublicRouteTable1": {
+            "Properties": {
+                "VpcId": {
+                    "Ref": "VPC"
+                }
+            },
+            "Type": "AWS::EC2::RouteTable"
+        },
+        "PublicSubnet0": {
+            "Properties": {
+                "AvailabilityZone": "us-west-2a",
+                "CidrBlock": {
+                    "Ref": "PublicSubnetCidr0"
+                },
+                "MapPublicIpOnLaunch": "true",
+                "VpcId": {
+                    "Ref": "VPC"
+                }
+            },
+            "Type": "AWS::EC2::Subnet"
+        },
+        "PublicSubnet1": {
+            "Properties": {
+                "AvailabilityZone": "us-west-2b",
+                "CidrBlock": {
+                    "Ref": "PublicSubnetCidr1"
+                },
+                "MapPublicIpOnLaunch": "true",
+                "VpcId": {
+                    "Ref": "VPC"
+                }
+            },
+            "Type": "AWS::EC2::Subnet"
+        },
+        "VPC": {
+            "Properties": {
+                "CidrBlock": {
+                    "Ref": "VPCCIDR"
+                }
+            },
+            "Type": "AWS::EC2::VPC"
+        }
+    }
+}
