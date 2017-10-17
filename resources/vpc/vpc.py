@@ -1,7 +1,7 @@
 from troposphere import Output, Ref, Template, Parameter, GetAtt
 from troposphere import ec2
 from common import write_json_to_file
-from config import props
+from resources.vpc.config import vpc_cidr, sub_nets, private_sub_net, nat_gateway
 
 
 def create_vpc_template(template=None):
@@ -10,16 +10,16 @@ def create_vpc_template(template=None):
         template.add_description('AWS cloud formation script template.at creates a VPC with a NAT Gg')
         template.add_version('2010-09-09')
 
-    vpc_cidr = template.add_parameter(Parameter(
+    vpc_cidr_block = template.add_parameter(Parameter(
         'VPCCIDR',
-        Default=props.get('vpc_cidr'),
+        Default=vpc_cidr,
         Description='The IP address space for this VPC, in CIDR notation',
         Type='String',
     ))
 
     vpc = template.add_resource(ec2.VPC(
         'VPC',
-        CidrBlock=Ref(vpc_cidr),
+        CidrBlock=Ref(vpc_cidr_block),
     ))
 
     igw = template.add_resource(ec2.InternetGateway('InternetGateway', ))
@@ -36,17 +36,17 @@ def create_vpc_template(template=None):
         Description='VPC Id'
     ))
 
-    for i, sub_net in enumerate(props.get('sub_nets')):
+    for i, sub_net in enumerate(sub_nets):
         public_subnet = template.add_parameter(Parameter(
             'PublicSubnetCidr{}'.format(i),
             Type='String',
             Description='Public Subnet CIDR',
-            Default=sub_net.get('public_cidr'),
+            Default=sub_net['public_cidr'],
         ))
 
         public_net = template.add_resource(ec2.Subnet(
             'PublicSubnet{}'.format(i),
-            AvailabilityZone=sub_net.get('region'),
+            AvailabilityZone=sub_net['region'],
             CidrBlock=Ref(public_subnet),
             MapPublicIpOnLaunch=True,
             VpcId=Ref(vpc),
@@ -76,12 +76,12 @@ def create_vpc_template(template=None):
             Description='Subnet Id'
         ))
 
-        if props.get('private_sub_net'):
+        if private_sub_net:
             private_subnet = template.add_parameter(Parameter(
                 'PrivateSubnetCidr{}'.format(i),
                 Type='String',
                 Description='Private Subnet CIDR',
-                Default=sub_net.get('private_cidr'),
+                Default=sub_net['private_cidr'],
             ))
 
             private_net = template.add_resource(ec2.Subnet(
@@ -108,7 +108,7 @@ def create_vpc_template(template=None):
                 Description='Subnet Id'
             ))
 
-        if props.get('nat_gateway') and props.get('private_sub_net'):
+        if nat_gateway and private_sub_net:
             nat_eip = template.add_resource(ec2.EIP(
                 'NatEip{}'.format(i),
                 Domain="vpc",
