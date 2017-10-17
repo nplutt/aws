@@ -15,5 +15,3 @@ schema_attributes = [
         required='true'
     )
 ]
-
-stack_name = 'apartments-cognito-user-pool'

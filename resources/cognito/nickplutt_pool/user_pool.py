@@ -1,9 +1,8 @@
 from troposphere import Template, Ref
-from resources.cognito.cognito import UserPool, PasswordPolicy, Policies, UserPoolClient, SchemaAttribute
-from os import environ
+from troposphere.cognito import UserPool, PasswordPolicy, Policies, UserPoolClient, SchemaAttribute
 from common import write_json_to_file
-from resources.cognito.user_pools.config import (user_pool_name, auto_verified_attributes, email_verification_message,
-                                                 email_verification_subject, pool_clients, schema_attributes, stack_name)
+from resources.cognito.nickplutt_pool.config import (user_pool_name, auto_verified_attributes, email_verification_message,
+                                                     email_verification_subject, pool_clients, schema_attributes)
 
 
 def create_cognito_user_pool(template=None):
@@ -61,4 +60,3 @@ def create_schema_attributes():
 
 if __name__ == '__main__':
     create_cognito_user_pool()
-    environ['stack_name'] = stack_name
