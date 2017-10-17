@@ -1,3 +1,8 @@
-# AWS Portfolio Projects
-#### UI Deployment Pipeline
-###### A Build pipeline that hooks into a Github project, builds the ui project, and places the results into an s3 bucket for static web hosting.
+# AWS
+
+### Quick Start
+In order to run any of the bash scripts you will first need to run the below commands:
+```bash
+mkvituralenv aws
+pip install -r requirements.txt
+```
