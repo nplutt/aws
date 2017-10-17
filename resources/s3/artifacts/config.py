@@ -1,4 +1,3 @@
-props = dict(
-    resource_name='npluttapatmentsartifacts',
-    bucket_name='nplutt.apartment.artifacts'
-)
+resource_name = 'nickpluttartifacts'
+bucket_name = 'nick.plutt.artifacts'
+

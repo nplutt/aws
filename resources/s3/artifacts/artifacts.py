@@ -1,6 +1,6 @@
 from troposphere import Template, s3
 from common import write_json_to_file
-from config import props
+from resources.s3.artifacts.config import resource_name, bucket_name
 
 
 def create_s3_buckets(template=None):
@@ -10,8 +10,8 @@ def create_s3_buckets(template=None):
         template.add_version('2010-09-09')
 
     code_bucket = s3.Bucket(
-        props.get('resource_name'),
-        BucketName=props.get('bucket_name'),
+        resource_name,
+        BucketName=bucket_name,
         VersioningConfiguration=s3.VersioningConfiguration(
             Status='Enabled'
         )
