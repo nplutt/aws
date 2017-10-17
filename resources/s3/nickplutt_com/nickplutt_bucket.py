@@ -2,7 +2,7 @@ from troposphere import Template, s3, Ref
 from awacs.aws import Action, Allow
 from awacs.aws import Policy, Statement, Principal
 from common import write_json_to_file
-from config import props
+from resources.s3.nickplutt_com.config import resource_name, bucket_name
 
 
 def create_s3_buckets(template=None):
@@ -12,8 +12,8 @@ def create_s3_buckets(template=None):
         template.add_version('2010-09-09')
 
     web_bucket = s3.Bucket(
-        props.get('resource_name'),
-        BucketName=props.get('bucket_name'),
+        resource_name,
+        BucketName=bucket_name,
         AccessControl=s3.PublicRead,
         WebsiteConfiguration=s3.WebsiteConfiguration(
             IndexDocument='index.html',
@@ -31,7 +31,7 @@ def create_s3_buckets(template=None):
             Statement(
                 Action=[Action('s3', 'GetObject')],
                 Effect=Allow,
-                Resource=['arn:aws:s3:::' + props.get('bucket_name') + '/*'],
+                Resource=['arn:aws:s3:::' + bucket_name + '/*'],
                 Principal=Principal('*')
             ),
         ],

@@ -10,5 +10,5 @@ cd $DIR
 python nickplutt_bucket.py
 
 # Deploy and wait for the stack to build
-aws cloudformation create-stack --stack-name nickplutt-com-bucket --template-body file://$DIR/nickplutt_bucket.json
-aws cloudformation wait stack-create-complete --stack-name nickplutt-com-bucket
+aws cloudformation update-stack --stack-name nickplutt-com-bucket --template-body file://$DIR/nickplutt_bucket.json
+aws cloudformation wait stack-update-complete --stack-name nickplutt-com-bucket
