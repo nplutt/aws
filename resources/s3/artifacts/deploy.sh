@@ -10,5 +10,5 @@ cd $DIR
 python artifacts.py
 
 # Deploy and wait for the stack to build
-aws cloudformation create-stack --stack-name build-artifacts --template-body file://$DIR/artifacts_bucket.json
-aws cloudformation wait stack-create-complete --stack-name build-artifacts
+aws cloudformation create-stack --stack-name nickplutt-build-artifacts --template-body file://$DIR/artifacts_bucket.json
+aws cloudformation wait stack-create-complete --stack-name nickplutt-build-artifacts
