@@ -1,7 +1,7 @@
 from troposphere import Output, Ref, Template, Parameter, GetAtt
 from troposphere import ec2
 from common import write_json_to_file
-from resources.vpc.config import vpc_cidr, sub_nets, private_sub_net, nat_gateway
+from general.vpc.config import vpc_cidr, sub_nets, private_sub_net, nat_gateway
 
 
 def create_vpc_template(template=None):

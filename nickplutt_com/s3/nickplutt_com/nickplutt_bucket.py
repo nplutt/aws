@@ -2,8 +2,7 @@ from troposphere import Template, s3, Ref
 from awacs.aws import Action, Allow
 from awacs.aws import Policy, Statement, Principal
 from common import write_json_to_file
-from resources.s3.www_nickplutt_com.config import resource_name, bucket_name
-from resources.s3.nickplutt_com.config import bucket_name as nickplutt_com_bucket_name
+from general.s3.nickplutt_com.config import resource_name, bucket_name
 
 
 def create_s3_buckets(template=None):
@@ -17,9 +16,8 @@ def create_s3_buckets(template=None):
         BucketName=bucket_name,
         AccessControl=s3.PublicRead,
         WebsiteConfiguration=s3.WebsiteConfiguration(
-            RedirectAllRequestsTo=s3.RedirectAllRequestsTo(
-                HostName=nickplutt_com_bucket_name
-            )
+            IndexDocument='index.html',
+            ErrorDocument='error.html'
         ),
         VersioningConfiguration=s3.VersioningConfiguration(
             Status='Enabled'
@@ -45,7 +43,7 @@ def create_s3_buckets(template=None):
         PolicyDocument=pd
     ))
 
-    write_json_to_file('www_nickplutt_bucket.json', template)
+    write_json_to_file('nickplutt_bucket.json', template)
 
 
 if __name__ == '__main__':

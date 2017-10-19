@@ -1,6 +1,6 @@
 from troposphere import Template, s3
 from common import write_json_to_file
-from resources.s3.artifacts.config import resource_name, bucket_name
+from general.s3.artifacts.config import resource_name, bucket_name
 
 
 def create_s3_buckets(template=None):

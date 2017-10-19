@@ -2,7 +2,7 @@ from troposphere import Template, s3, Ref
 from awacs.aws import Action, Allow
 from awacs.aws import Policy, Statement, Principal
 from common import write_json_to_file
-from resources.s3.nickplutt_com.config import resource_name, bucket_name
+from general.s3.nickplutt_com.config import resource_name, bucket_name
 
 
 def create_s3_buckets(template=None):
