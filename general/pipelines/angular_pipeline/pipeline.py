@@ -12,7 +12,7 @@ from general.s3.website_name_com.config import bucket_name as website_name_com_b
 def create_code_build_template(template=None):
     if not template:
         template = Template()
-        template.add_description('This CloudFormation template creates a build for the apartments main ui.')
+        template.add_description('This CloudFormation template creates a build pipeline for an angular application.')
         template.add_version('2010-09-09')
 
     code_build_role = template.add_resource(
