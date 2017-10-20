@@ -1,3 +1,3 @@
-resource_name = 'nickpluttartifacts'
-bucket_name = 'nick.plutt.artifacts'
+resource_name = 'artifacts'
+bucket_name = 'artifacts'
 

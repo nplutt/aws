@@ -2,9 +2,9 @@
     "AWSTemplateFormatVersion": "2010-09-09",
     "Description": "This cloudformation template creates an s3 bucket for build artifacts",
     "Resources": {
-        "nickpluttartifacts": {
+        "artifacts": {
             "Properties": {
-                "BucketName": "nick.plutt.artifacts",
+                "BucketName": "artifacts",
                 "VersioningConfiguration": {
                     "Status": "Enabled"
                 }

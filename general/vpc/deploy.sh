@@ -4,7 +4,7 @@ set -e
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 cd $DIR
-. ../../python_path.sh
+export PYTHONPATH=$PYTHONPATH:$(git rev-parse --show-toplevel)
 
 # Create the cloudformation json file
 python vpc.py

@@ -19,7 +19,7 @@ def create_s3_buckets(template=None):
 
     template.add_resource(code_bucket)
 
-    write_json_to_file('artifacts_bucket.json', template)
+    write_json_to_file('bucket.json', template)
 
 
 if __name__ == '__main__':

@@ -5,7 +5,7 @@
         "BucketPolicy": {
             "Properties": {
                 "Bucket": {
-                    "Ref": "nickpluttcom"
+                    "Ref": "wwwwebsitenamecom"
                 },
                 "PolicyDocument": {
                     "Statement": [
@@ -16,7 +16,7 @@
                             "Effect": "Allow",
                             "Principal": "*",
                             "Resource": [
-                                "arn:aws:s3:::nickplutt.com/*"
+                                "arn:aws:s3:::www.websitename.com/*"
                             ]
                         }
                     ]
@@ -24,16 +24,17 @@
             },
             "Type": "AWS::S3::BucketPolicy"
         },
-        "nickpluttcom": {
+        "wwwwebsitenamecom": {
             "Properties": {
                 "AccessControl": "PublicRead",
-                "BucketName": "nickplutt.com",
+                "BucketName": "www.websitename.com",
                 "VersioningConfiguration": {
                     "Status": "Enabled"
                 },
                 "WebsiteConfiguration": {
-                    "ErrorDocument": "error.html",
-                    "IndexDocument": "index.html"
+                    "RedirectAllRequestsTo": {
+                        "HostName": "websitename.com"
+                    }
                 }
             },
             "Type": "AWS::S3::Bucket"

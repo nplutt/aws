@@ -10,5 +10,5 @@ export PYTHONPATH=$PYTHONPATH:$(git rev-parse --show-toplevel)
 python bucket.py
 
 # Deploy and wait for the stack to build
-aws cloudformation update-stack --stack-name build-artifacts --template-body file://$DIR/bucket.json
-aws cloudformation wait stack-update-complete --stack-name build-artifacts
+aws cloudformation create-stack --stack-name website-name-com-bucket --template-body file://$DIR/bucket.json
+aws cloudformation wait stack-create-complete --stack-name website-name-com-bucket

@@ -2,11 +2,11 @@
     "AWSTemplateFormatVersion": "2010-09-09",
     "Description": "This CloudFormation template creates a build for the apartments main ui.",
     "Resources": {
-        "PersonalWebsiteUI": {
+        "Angular4Build": {
             "Properties": {
                 "Artifacts": {
-                    "Location": "nick.plutt.artifacts",
-                    "Name": "PersonalWebsiteUI",
+                    "Location": "artifacts",
+                    "Name": "Angular4Build",
                     "Packaging": "zip",
                     "Type": "S3"
                 },
@@ -19,15 +19,15 @@
                         },
                         {
                             "Name": "BUCKET",
-                            "Value": "nickplutt.com"
+                            "Value": "websitename.com"
                         }
                     ],
                     "Image": "nplutt/ubuntu-docker-build",
                     "Type": "LINUX_CONTAINER"
                 },
-                "Name": "PersonalWebsiteUI",
+                "Name": "Angular4Build",
                 "ServiceRole": {
-                    "Ref": "PersonalWebsiteUIBuildRole"
+                    "Ref": "Angular4BuildRole"
                 },
                 "Source": {
                     "Location": "https://github.com/nplutt/personal-website.git",
@@ -37,7 +37,7 @@
             },
             "Type": "AWS::CodeBuild::Project"
         },
-        "PersonalWebsiteUIBuildPolicy": {
+        "Angular4BuildPolicy": {
             "Properties": {
                 "PolicyDocument": {
                     "Statement": [
@@ -60,7 +60,7 @@
                                             {
                                                 "Ref": "AWS::AccountId"
                                             },
-                                            "log-group:/aws/codebuild/PersonalWebsiteUI"
+                                            "log-group:/aws/codebuild/Angular4Build"
                                         ]
                                     ]
                                 },
@@ -75,7 +75,7 @@
                                             {
                                                 "Ref": "AWS::AccountId"
                                             },
-                                            "log-group:/aws/codebuild/PersonalWebsiteUI",
+                                            "log-group:/aws/codebuild/Angular4Build",
                                             "*"
                                         ]
                                     ]
@@ -90,8 +90,8 @@
                             ],
                             "Effect": "Allow",
                             "Resource": [
-                                "arn:aws:s3:::nick.plutt.artifacts/*",
-                                "arn:aws:s3:::nickplutt.com/*"
+                                "arn:aws:s3:::artifacts/*",
+                                "arn:aws:s3:::websitename.com/*"
                             ]
                         }
                     ],
@@ -99,24 +99,24 @@
                 },
                 "Roles": [
                     {
-                        "Ref": "PersonalWebsiteUIBuildRole"
+                        "Ref": "Angular4BuildRole"
                     }
                 ]
             },
             "Type": "AWS::IAM::ManagedPolicy"
         },
-        "PersonalWebsiteUIBuildProfile": {
+        "Angular4BuildProfile": {
             "Properties": {
                 "Path": "/service-role/",
                 "Roles": [
                     {
-                        "Ref": "PersonalWebsiteUIBuildRole"
+                        "Ref": "Angular4BuildRole"
                     }
                 ]
             },
             "Type": "AWS::IAM::InstanceProfile"
         },
-        "PersonalWebsiteUIBuildRole": {
+        "Angular4BuildRole": {
             "Properties": {
                 "AssumeRolePolicyDocument": {
                     "Statement": [

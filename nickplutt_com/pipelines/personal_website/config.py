@@ -1,4 +1,4 @@
-code_build_name = 'PersonalWebsiteUI'
+code_build_name = 'PersonalWebsiteUIi'
 role_name = 'PersonalWebsiteUIBuildRole'
 profile_name = 'PersonalWebsiteUIBuildProfile'
 policy_name = 'PersonalWebsiteUIBuildPolicy'

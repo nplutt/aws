@@ -7,8 +7,8 @@ cd $DIR
 export PYTHONPATH=$PYTHONPATH:$(git rev-parse --show-toplevel)
 
 # Create the cloudformation json file
-python vpc.py
+python bucket.py
 
 #Deploy and wait for the stack to build
-aws cloudformation update-stack --stack-name vpc --template-body file://$DIR/vpc.json
-aws cloudformation wait stack-update-complete --stack-name vpc
+aws cloudformation create-stack --stack-name www-website-name-com-bucket --template-body file://$DIR/bucket.json
+aws cloudformation wait stack-create-complete --stack-name www-website-name-com-bucket

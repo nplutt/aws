@@ -3,10 +3,10 @@ from awacs.sts import AssumeRole
 from troposphere import Template, Join, Ref, codebuild, iam
 
 from common import write_json_to_file
-from general.pipelines.personal_website.config import (role_name, profile_name, policy_name, code_build_name, repo_url,
-                                                       docker_image)
-from general.s3.artifacts.config import bucket_name as artifact_bucket_name
-from general.s3.nickplutt_com.config import bucket_name as nickplutt_com_bucket_name
+from nickplutt_com.pipelines.personal_website.config import (role_name, profile_name, policy_name, code_build_name,
+                                                             repo_url, docker_image)
+from nickplutt_com.s3.artifacts.config import bucket_name as artifact_bucket_name
+from nickplutt_com.s3.nickplutt_com.config import bucket_name as nickplutt_com_bucket_name
 
 
 def create_code_build_template(template=None):

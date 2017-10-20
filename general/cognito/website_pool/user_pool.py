@@ -1,8 +1,8 @@
 from troposphere import Template, Ref
 from troposphere.cognito import UserPool, PasswordPolicy, Policies, UserPoolClient, SchemaAttribute
 from common import write_json_to_file
-from general.cognito.nickplutt_pool.config import (user_pool_name, auto_verified_attributes, email_verification_message,
-                                                   email_verification_subject, pool_clients, schema_attributes)
+from general.cognito.website_pool.config import (user_pool_name, auto_verified_attributes, email_verification_message,
+                                                 email_verification_subject, pool_clients, schema_attributes)
 
 
 def create_cognito_user_pool(template=None):

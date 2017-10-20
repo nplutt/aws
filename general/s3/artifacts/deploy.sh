@@ -4,11 +4,11 @@ set -e
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 cd $DIR
-. ../../../python_path.sh
+export PYTHONPATH=$PYTHONPATH:$(git rev-parse --show-toplevel)
 
 # Create the cloudformation json file
-python artifacts.py
+python bucket.py
 
 # Deploy and wait for the stack to build
-aws cloudformation create-stack --stack-name nickplutt-build-artifacts --template-body file://$DIR/artifacts_bucket.json
-aws cloudformation wait stack-create-complete --stack-name nickplutt-build-artifacts
+aws cloudformation create-stack --stack-name build-artifacts --template-body file://$DIR/bucket.json
+aws cloudformation wait stack-create-complete --stack-name build-artifacts

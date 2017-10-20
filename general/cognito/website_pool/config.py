@@ -1,4 +1,4 @@
-user_pool_name = 'nickpltt'
+user_pool_name = 'websitename'
 auto_verified_attributes = ['email']
 email_verification_message = 'Your verification code is {####}.'
 email_verification_subject = 'Your verification code'

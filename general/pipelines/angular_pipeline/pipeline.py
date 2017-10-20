@@ -3,10 +3,10 @@ from awacs.sts import AssumeRole
 from troposphere import Template, Join, Ref, codebuild, iam
 
 from common import write_json_to_file
-from general.pipelines.personal_website.config import (role_name, profile_name, policy_name, code_build_name, repo_url,
+from general.pipelines.angular_pipeline.config import (role_name, profile_name, policy_name, code_build_name, repo_url,
                                                        docker_image)
 from general.s3.artifacts.config import bucket_name as artifact_bucket_name
-from general.s3.nickplutt_com.config import bucket_name as nickplutt_com_bucket_name
+from general.s3.website_name_com.config import bucket_name as website_name_com_bucket_name
 
 
 def create_code_build_template(template=None):
@@ -62,7 +62,7 @@ def create_code_build_template(template=None):
                         Effect=Allow,
                         Resource=[
                             'arn:aws:s3:::' + artifact_bucket_name + '/*',
-                            'arn:aws:s3:::' + nickplutt_com_bucket_name + '/*'
+                            'arn:aws:s3:::' + website_name_com_bucket_name + '/*'
                         ],
                         Action=[
                             Action('s3', 'PutObject'),
@@ -94,7 +94,7 @@ def create_code_build_template(template=None):
             ),
             codebuild.EnvironmentVariable(
                 Name='BUCKET',
-                Value=nickplutt_com_bucket_name
+                Value=website_name_com_bucket_name
             )
         ]
     )
@@ -115,7 +115,7 @@ def create_code_build_template(template=None):
     )
     code_build = template.add_resource(project)
 
-    write_json_to_file('ui_pipeline.json', template)
+    write_json_to_file('pipeline.json', template)
 
     return template
 
