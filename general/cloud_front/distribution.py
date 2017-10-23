@@ -2,7 +2,7 @@ from troposphere import Parameter, Ref, Template
 from troposphere.cloudfront import (DefaultCacheBehavior, Distribution, DistributionConfig, ForwardedValues, Origin, S3Origin,
                                     ViewerCertificate)
 from common import write_json_to_file
-from nickplutt_com.cloud_front.config import (s3_dns_name, distribution_name, origin_id, viewer_protocol_policy,
+from general.cloud_front.config import (s3_dns_name, distribution_name, origin_id, viewer_protocol_policy,
                                               allowed_methods, min_ttl, max_ttl, default_ttl, compress_objects,
                                               price_class, alternate_domain_names, certificate_arn, default_root_object,
                                               enabled)
@@ -52,6 +52,7 @@ def create_distribution_template(template=None):
         )
     )
 
+    # print template.to_json()
     write_json_to_file('distribution.json', template)
 
 
