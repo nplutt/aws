@@ -89,10 +89,6 @@ def create_code_build_template(template=None):
         Type='LINUX_CONTAINER',
         EnvironmentVariables=[
             codebuild.EnvironmentVariable(
-                Name='CHROME_BIN',
-                Value='/serverless-chrome/chrome/headless-chrome/headless_shell'
-            ),
-            codebuild.EnvironmentVariable(
                 Name='BUCKET',
                 Value=nickplutt_com_bucket_name
             )
