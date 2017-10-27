@@ -1,22 +1,23 @@
 from awacs.aws import Action, Allow, Statement, Principal, Policy
 from awacs.sts import AssumeRole
-from troposphere import Template, Ref, codebuild, iam
+from troposphere import Template, Join, Ref, codebuild, iam
 
-from ui_integrated_deployment.common import write_json_to_file
-from ui_integrated_deployment.properties import (region, account_number, ui_codebuild_project_name, codebuild_bucket_name,
-                                                 ui_codebuild_docker_image, ui_repo_url, ui_build_role_name,
-                                                 ui_build_instance_profile, ui_build_policy)
+from common import write_json_to_file
+from examples.angular_pipeline.codebuild.config import (role_name, profile_name, policy_name, code_build_name, repo_url,
+                                                        docker_image)
+from examples.angular_pipeline.s3.artifacts.config import bucket_name as artifact_bucket_name
+from examples.angular_pipeline.s3.website_name_com.config import bucket_name as website_name_com_bucket_name
 
 
 def create_code_build_template(template=None):
     if not template:
         template = Template()
-        template.add_description('This CloudFormation template creates a build for an angular2 build.')
+        template.add_description('This CloudFormation template creates a build pipeline for an angular application.')
         template.add_version('2010-09-09')
 
     code_build_role = template.add_resource(
         iam.Role(
-            ui_build_role_name,
+            role_name,
             AssumeRolePolicyDocument=Policy(
                 Statement=[
                     Statement(
@@ -31,7 +32,7 @@ def create_code_build_template(template=None):
 
     code_build_instance_profile = template.add_resource(
         iam.InstanceProfile(
-            ui_build_instance_profile,
+            profile_name,
             Path='/service-role/',
             Roles=[Ref(code_build_role)]
         )
@@ -39,15 +40,17 @@ def create_code_build_template(template=None):
 
     code_build_role_policies = template.add_resource(
         iam.ManagedPolicy(
-            ui_build_policy,
+            policy_name,
             PolicyDocument=Policy(
                 Version='2012-10-17',
                 Statement=[
                     Statement(
                         Effect=Allow,
                         Resource=[
-                            'arn:aws:logs:' + region + ':' + account_number + ':log-group:/aws/codebuild/' + ui_codebuild_project_name,
-                            'arn:aws:logs:' + region + ':' + account_number + ':log-group:/aws/codebuild/' + ui_codebuild_project_name + ':*',
+                            Join(':', ['arn:aws:logs', Ref('AWS::Region'), Ref('AWS::AccountId'),
+                                       'log-group:/aws/codebuild/{}'.format(code_build_name)]),
+                            Join(':', ['arn:aws:logs', Ref('AWS::Region'), Ref('AWS::AccountId'),
+                                       'log-group:/aws/codebuild/{}'.format(code_build_name), '*'])
                         ],
                         Action=[
                             Action('logs', 'CreateLogGroup'),
@@ -58,7 +61,8 @@ def create_code_build_template(template=None):
                     Statement(
                         Effect=Allow,
                         Resource=[
-                            'arn:aws:s3:::' + codebuild_bucket_name + '/*'
+                            'arn:aws:s3:::' + artifact_bucket_name + '/*',
+                            'arn:aws:s3:::' + website_name_com_bucket_name + '/*'
                         ],
                         Action=[
                             Action('s3', 'PutObject'),
@@ -74,36 +78,44 @@ def create_code_build_template(template=None):
 
     artifacts = codebuild.Artifacts(
         Type='S3',
-        Name=ui_codebuild_project_name,
-        Location=codebuild_bucket_name
+        Name=code_build_name,
+        Location=artifact_bucket_name,
+        Packaging='zip'
     )
 
     environment = codebuild.Environment(
         ComputeType='BUILD_GENERAL1_SMALL',
-        Image=ui_codebuild_docker_image,
-        Type='LINUX_CONTAINER'
+        Image=docker_image,
+        Type='LINUX_CONTAINER',
+        EnvironmentVariables=[
+            codebuild.EnvironmentVariable(
+                Name='BUCKET',
+                Value=website_name_com_bucket_name
+            )
+        ]
     )
 
     source = codebuild.Source(
-        Location=ui_repo_url,
+        Location=repo_url,
         Type='GITHUB'
     )
 
     project = codebuild.Project(
-        ui_codebuild_project_name,
+        code_build_name,
         Artifacts=artifacts,
         Environment=environment,
-        Name=ui_codebuild_project_name,
+        Name=code_build_name,
         ServiceRole=Ref(code_build_role),
-        TimeoutInMinutes=5,
+        TimeoutInMinutes=10,
         Source=source
     )
     code_build = template.add_resource(project)
 
-    write_json_to_file('code_build_template.json', template)
+    write_json_to_file('pipeline.json', template)
 
     return template
 
 
 if __name__ == '__main__':
     create_code_build_template()
+    print('code_build_name: {}'.format(code_build_name))

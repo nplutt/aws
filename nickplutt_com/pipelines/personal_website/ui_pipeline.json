@@ -18,7 +18,7 @@
                             "Value": "nickplutt.com"
                         }
                     ],
-                    "Image": "nplutt/ubuntu-docker-build",
+                    "Image": "nplutt/headless-chrome-ubuntu",
                     "Type": "LINUX_CONTAINER"
                 },
                 "Name": "PersonalWebsiteUI",
