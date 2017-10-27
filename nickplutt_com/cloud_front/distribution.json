@@ -36,7 +36,21 @@
                     ],
                     "PriceClass": "PriceClass_100",
                     "ViewerCertificate": {
-                        "AcmCertificateArn": "arn:aws:acm:us-east-1:562628674386:certificate/c7da2423-5b30-4ae4-ba1f-f405b4ecdc59",
+                        "AcmCertificateArn": {
+                            "Fn::Join": [
+                                ":",
+                                [
+                                    "arn",
+                                    "aws",
+                                    "acm",
+                                    "us-east-1",
+                                    {
+                                        "Ref": "AWS::AccountId"
+                                    },
+                                    "certificate/c7da2423-5b30-4ae4-ba1f-f405b4ecdc59"
+                                ]
+                            ]
+                        },
                         "MinimumProtocolVersion": "TLSv1.1_2016",
                         "SslSupportMethod": "sni-only"
                     }

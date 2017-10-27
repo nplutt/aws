@@ -1,4 +1,4 @@
-from troposphere import Parameter, Ref, Template
+from troposphere import Ref, Template, Join
 from troposphere.cloudfront import (DefaultCacheBehavior, Distribution, DistributionConfig, ForwardedValues, Origin, S3Origin,
                                     ViewerCertificate)
 from common import write_json_to_file
@@ -41,7 +41,8 @@ def create_distribution_template(template=None):
                 PriceClass=price_class,
                 Aliases=alternate_domain_names,
                 ViewerCertificate=ViewerCertificate(
-                    AcmCertificateArn=certificate_arn,
+                    AcmCertificateArn=Join(':', ['arn', 'aws', 'acm', 'us-east-1', Ref('AWS::AccountId'),
+                                                 'certificate/{}'.format(certificate_arn)]),
                     SslSupportMethod='sni-only',
                     MinimumProtocolVersion='TLSv1.1_2016'
                 ),

@@ -20,12 +20,13 @@ $ ./general/s3/artifacts/deploy.sh
 ```
 
 ## Examples
-- [Angular Build Pipeline](https://github.com/nplutt/aws/tree/master/examples/angular_pipeline): A Build pipeline that will build and deploy an Angular application and save the build artifacts to S3
+- [Angular Build Pipeline](https://github.com/nplutt/aws/tree/master/examples/angular_pipeline): 
+A Build pipeline that will build and deploy an Angular application and save the build artifacts to S3
     
 ## Generic AWS Resources
 - [AWS Certificate Manager](https://github.com/nplutt/aws/tree/master/general/acm)
 - [Cognito Pool](https://github.com/nplutt/aws/tree/master/general/cognito/website_pool)
-- [Cloudfront](https://github.com/nplutt/aws/tree/master/general/cloudfront)
+- [Cloudfront](https://github.com/nplutt/aws/tree/master/general/cloud_front)
 - Pipelines
     * [Angular Pipeline](https://github.com/nplutt/aws/tree/master/general/pipelines/angular_pipeline)
 - S3
@@ -34,5 +35,8 @@ $ ./general/s3/artifacts/deploy.sh
     * [Website Hosting Bucket](https://github.com/nplutt/aws/tree/master/general/s3/website_name_com)
 - [VPC](https://github.com/nplutt/aws/tree/master/general/vpc)
 
-Licence
+## NickPlutt.com
+- All of the infrastructure code for my personal [website](https://www.nickplutt.com)
+
+## Licence
 [MIT](https://github.com/nplutt/aws/blob/master/LICENSE)
