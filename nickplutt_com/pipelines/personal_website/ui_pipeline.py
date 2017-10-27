@@ -118,3 +118,4 @@ def create_code_build_template(template=None):
 
 if __name__ == '__main__':
     create_code_build_template()
+    print('code_build_name: {}'.format(code_build_name))
