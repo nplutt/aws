@@ -19,24 +19,30 @@ Now that puppeteer has been installed, the `karma.config.js` file must be modifi
 unit tests can be run from headless Chrome. 
 
 1. The `CHROME_BIN` environment variable needs to be set at the top of the `karma.config.js` file
-    ```javascript
-    process.env.CHROME_BIN = require('puppeteer').executablePath();
-    ```
+
+```javascript
+process.env.CHROME_BIN = require('puppeteer').executablePath();
+```
+
 2. Modify the array of browsers to include ChromeHeadless and ChromeHeadlessCI
-    ```javascript
-    browsers: ['Chrome', 'ChromeHeadless', 'ChromeHeadlessCI'],
-    ```
+
+```javascript
+browsers: ['Chrome', 'ChromeHeadless', 'ChromeHeadlessCI'],
+```
+
 3. Create a new custom launcher called ChromeHeadlessCI
-    ```javascript
-     customLaunchers: {
-      ChromeHeadlessCI: {
-        base: 'ChromeHeadless',
-        flags: ['--no-sandbox']
-      }
-    }
-    ```
+
+```javascript
+ customLaunchers: {
+  ChromeHeadlessCI: {
+    base: 'ChromeHeadless',
+    flags: ['--no-sandbox']
+  }
+}
+```
     
 Once the changes to the `karma.config.js` file are complete the file should look something like:
+
 ```javascript
 process.env.CHROME_BIN = require('puppeteer').executablePath();
 
@@ -127,6 +133,7 @@ configuration scripts can be found [here](https://github.com/nplutt/aws/tree/art
 
 #### S3 Bucket Configured for Static Web Hosting Cloudformation Template
 Creates an S3 bucket that is accessible to the world and is specially configured for hosting static web assets.
+
 ```javascript
 {
     "AWSTemplateFormatVersion": "2010-09-09",
@@ -174,6 +181,7 @@ Creates an S3 bucket that is accessible to the world and is specially configured
 
 #### Artifacts S3 Bucket Cloudformation Template
 Creates a private S3 bucket for storing the Angular build artifacts.
+
 ```javascript
 {
     "AWSTemplateFormatVersion": "2010-09-09",
@@ -202,6 +210,7 @@ modified Ubuntu image that is pre-loaded with some additional libraries to allow
 it.
 3. Environment variable: The bucket name that the website will be hosted in, this environment variable is used
  in the `buildspec.yml` file that was added to the Angular application.
+
 ```javascript
 {
     "AWSTemplateFormatVersion": "2010-09-09",
@@ -342,6 +351,7 @@ it.
 ```
 
 Once the Codebuild build has been created a webhook can be added using the AWS CLI.
+
 ```bash
 $ aws codebuild create-webhook --project-name Angular4Build
 ```
