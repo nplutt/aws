@@ -1,30 +1,29 @@
 # Angular 4 Build Pipeline
-This example will show you how to build an Angular 4 build pipeline in AWS, make
-the application available to users through a static web hosted S3 bucket, and save 
-the build artifacts to an S3 bucket.
+This tutorial details how to build an Angular 4 build pipeline in AWS, deploy
+the application so that it is available to users through a S3 bucket configured for static web hosting, 
+and save the build artifacts to an S3 bucket.
 
 ![Alt text](https://github.com/nplutt/aws/blob/master/examples/angular_pipeline/Angular_pipeline.jpg)
 
 In order to build an Angular 4 application in AWS Codebuild, some things must first be added. 
 The first thing that needs to be added is [puppeteer](https://www.npmjs.com/package/puppeteer),
-which handles installing the most recent up to date Chromium binary. To install puppeteer run the following
-command:
+puppeteer handles installing the most recent up to date Chrome binary, which is needed to run unit tests
+from headless Chrome in AWS Codebuild. Puppeteer can be installed by running the following command:
 ```bash
 $ npm install puppeteer --save-dev
 ```
-Once puppeteer is installed the following changes must be made to the `karma.config.js` file so that headless 
-Chrome can be run in AWS Codebuild: 
+Once puppeteer is installed the following changes must be made to the `karma.config.js` file to allow 
+unit tests to be run from headless Chrome in AWS Codebuild: 
 
-1. Set the CHROME_BIN environment variable, to do this add the below line to to the top of the file
+1. Set the `CHROME_BIN` environment variable by adding the below line to the top of the file
     ```javascript
     process.env.CHROME_BIN = require('puppeteer').executablePath();
     ```
-2. Modify the browsers array to include ChromeHeadless and ChromeHeadlessCI
-
+2. Modify the array of browsers to include ChromeHeadless and ChromeHeadlessCI
     ```javascript
     browsers: ['Chrome', 'ChromeHeadless', 'ChromeHeadlessCI'],
     ```
-3. Add a new custom launcher called ChromeHeadlessCI
+3. Create a new custom launcher called ChromeHeadlessCI
     ```javascript
      customLaunchers: {
       ChromeHeadlessCI: {
@@ -76,15 +75,15 @@ module.exports = function (config) {
 };
 ```
 
-The next step is to add the following test and build commands to the `package.json` file: 
+The next step is to add the test and build commands that will be used in AWS Codebuild to the `package.json` file.
 ```javascript
 "test:ci": "ng test --browser=ChromeHeadlessCI --code-coverage=true --single-run=true",
 "build:ci": "ng build --target=production --environment=prod --deploy-url=domain.com",
 ```
     
-Now that the build commands have been added to the `package.json` file, a `buildspec.yaml` file must be created.
-The `buildspec.yaml` file holds all of the build commands that will be run during the build process. The below file 
-is an example of a build that works for this example.
+Now that the build commands have been added to the `package.json` file, a `buildspec.yml` file must be created in the 
+root of the Angular project. The `buildspec.yml` file holds all of the build commands that will be run during the 
+build process. Below is an example of a `buildspec.yml` for this tutorial.
 ```yaml
 version: 0.2
 
@@ -114,11 +113,15 @@ artifacts:
         - dist/*
 ```
     
-Now that the Angular application has been modified to run in AWS Codebuild we must now create the AWS infrastructure
-needed for this example. The resources that need to be created are a S3 bucket for hosting the Angular application,
-an S3 bucket for holding build artifacts, and a Codebuild build.
+Now that the Angular application has been modified to be built in AWS Codebuild we must now create the AWS infrastructure
+needed for this tutorial. The resources that need to be created are an S3 bucket for hosting the Angular application,
+an S3 bucket for storing the build artifacts, and a Codebuild build. Below are the cloudformation templates for creating
+all of the necessary resources.
 
-Static Web Hosting S3 Bucket Cloudformation Template
+##### Static Web Hosting S3 Bucket Cloudformation Template
+This template creates an S3 bucket that is accessible to the world and is specially configured for hosting static web
+assets. This configuration sets the Angular app's `index.html` file to be the default asset that is returned to users.
+
 ```javascript
 {
     "AWSTemplateFormatVersion": "2010-09-09",
@@ -164,7 +167,8 @@ Static Web Hosting S3 Bucket Cloudformation Template
 }
 ```  
 
-Artifacts S3 Bucket Cloudformation Template
+##### Artifacts S3 Bucket Cloudformation Template
+This template creates a private S3 bucket for storing the Angular build artifacts.
 ```javascript
 {
     "AWSTemplateFormatVersion": "2010-09-09",
@@ -183,7 +187,16 @@ Artifacts S3 Bucket Cloudformation Template
 }
 ```
 
-Codebuild Cloudformation Template
+##### Codebuild Cloudformation Template
+This template creates an IAM role and the Codebuild instance that will be used for this tutorial.
+Some of the things that are specially configured to for this tutorial are:
+1. Source location: The repository that the build will pull from. For this tutorial the build will reference
+my personal website, which is already configured to be built in Codebuild.
+2. Image: The Docker container that the Angular app will be built in. For this tutorial the image is a 
+modified Ubuntu image that is pre-loaded with some additional libraries to allow headless Chrome to be run in
+Codebuild.
+3. Environment variable: The bucket name that the website will be hosted in must be exported. 
+This environment variable is used in the `buildspec.yml` file that was added to the Angular app.
 ```javascript
 {
     "AWSTemplateFormatVersion": "2010-09-09",
