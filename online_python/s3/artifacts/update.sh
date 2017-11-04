@@ -10,5 +10,5 @@ export PYTHONPATH=$PYTHONPATH:$(git rev-parse --show-toplevel)
 python artifacts.py
 
 # Deploy and wait for the stack to build
-aws cloudformation update-stack --stack-name nickplutt-build-artifacts --template-body file://$DIR/artifacts_bucket.json
-aws cloudformation wait stack-update-complete --stack-name nickplutt-build-artifacts
+aws cloudformation update-stack --stack-name nplutt-online-python-artifacts --template-body file://$DIR/artifacts_bucket.json
+aws cloudformation wait stack-update-complete --stack-name nplutt-online-python-artifacts
