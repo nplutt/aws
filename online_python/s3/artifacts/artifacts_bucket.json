@@ -1,0 +1,15 @@
+{
+    "AWSTemplateFormatVersion": "2010-09-09",
+    "Description": "This cloudformation template creates an s3 bucket for build artifacts",
+    "Resources": {
+        "npluttOnlinePythonArtifacts": {
+            "Properties": {
+                "BucketName": "nplutt-online-python-artifacts",
+                "VersioningConfiguration": {
+                    "Status": "Enabled"
+                }
+            },
+            "Type": "AWS::S3::Bucket"
+        }
+    }
+}
