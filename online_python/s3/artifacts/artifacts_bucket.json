@@ -5,6 +5,31 @@
         "npluttOnlinePythonArtifacts": {
             "Properties": {
                 "BucketName": "nplutt-online-python-artifacts",
+                "NotificationConfiguration": {
+                    "LambdaConfigurations": [
+                        {
+                            "Event": "s3:ObjectCreated:Put",
+                            "Function": {
+                                "Fn::Join": [
+                                    ":",
+                                    [
+                                        "arn",
+                                        "aws",
+                                        "lambda",
+                                        {
+                                            "Ref": "AWS::Region"
+                                        },
+                                        {
+                                            "Ref": "AWS::AccountId"
+                                        },
+                                        "function",
+                                        "install-dev-install"
+                                    ]
+                                ]
+                            }
+                        }
+                    ]
+                },
                 "VersioningConfiguration": {
                     "Status": "Enabled"
                 }
