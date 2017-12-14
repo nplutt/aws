@@ -80,6 +80,20 @@ def create_lambda_iam_role(template):
         ]
     )
 
+    kinesis_statement = Statement(
+        Effect=Allow,
+        Resource=[
+            Join(':', ['arn:aws:kinesis',
+                       Ref('AWS::Region'),
+                       Ref('AWS::AccountId'),
+                       'stream/{}'.format(kinesis_params['stream_name'])])
+        ],
+        Action=[
+            Action('kinesis', 'DescribeStream'),
+            Action('kinesis', 'PutRecords')
+        ]
+    )
+
     lambda_statement = Statement(
         Effect=Allow,
         Resource=[
@@ -113,6 +127,7 @@ def create_lambda_iam_role(template):
             Version='2012-10-17',
             Statement=[
                 cloudwatch_statement,
+                kinesis_statement,
                 lambda_statement,
                 s3_statement
             ]

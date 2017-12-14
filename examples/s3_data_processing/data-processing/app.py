@@ -1,6 +1,8 @@
 from chalice import Chalice
 import boto3
+from botocore.exceptions import ClientError
 import logging
+import os
 
 app = Chalice(app_name='data-processing')
 app.log.setLevel(logging.DEBUG)
@@ -8,6 +10,8 @@ app.log.setLevel(logging.DEBUG)
 kinesis = boto3.client('kinesis')
 lam = boto3.client('lambda')
 s3 = boto3.client('s3')
+
+BUCKET_NAME = os.environ['BUCKET_NAME']
 
 
 @app.route('/')
@@ -31,6 +35,11 @@ def ingress(event, context):
     """
     app.log.info('Triggered by event {}'.format(event))
 
+    key = event['s3Key']
+    index = event['index']
+
+    s3_file = get_file_from_s3(key)
+    
 
 @app.lambda_function(name='processor')
 def processor(event, context):
@@ -45,3 +54,18 @@ def processor(event, context):
     """
     app.log.info('Triggered by event {}'.format(event))
 
+
+def get_file_from_s3(key):
+    try:
+        s3_file = s3.get_object(Bucket=BUCKET_NAME,
+                                Key=key)
+    except ClientError as e:
+        error_code = int(e.response['Error']['Code'])
+        if error_code == 404 or error_code == 403:
+            app.log.error('Key {} could not be found S3 returned a status code of {}.'
+                          .format(key, error_code))
+        else:
+            logging.error(e)
+        raise
+
+    return s3_file['Body'].read()
