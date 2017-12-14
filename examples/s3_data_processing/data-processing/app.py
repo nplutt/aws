@@ -1,6 +1,7 @@
 from chalice import Chalice
 import boto3
 from botocore.exceptions import ClientError
+import json
 import logging
 import os
 
@@ -8,10 +9,12 @@ app = Chalice(app_name='data-processing')
 app.log.setLevel(logging.DEBUG)
 
 kinesis = boto3.client('kinesis')
-lam = boto3.client('lambda')
+aws_lambda = boto3.client('lambda')
 s3 = boto3.client('s3')
 
 BUCKET_NAME = os.environ['BUCKET_NAME']
+ENVIRONMENT_NAME = os.environ['ENVIRONMENT']
+STREAM_NAME = os.environ['STREAM_NAME']
 
 
 @app.route('/')
@@ -39,7 +42,28 @@ def ingress(event, context):
     index = event['index']
 
     s3_file = get_file_from_s3(key)
-    
+    uuids = s3_file[index:]
+    records = []
+
+    for x in range(index, index + 5000):
+        record = dict(Data=str(uuids[x]),
+                      PartitionKey=str(hash(uuids[x])))
+        records.append(record)
+        if (x % 500) == 0 and x > 0:
+            kinesis.put_records(Records=records,
+                                StreamName=STREAM_NAME)
+            records = []
+
+    aws_lambda.invoke(
+        FunctionName='data-processing-ingress-{}'.format(ENVIRONMENT_NAME),
+        Payload=json.dumps(
+            dict(
+                key=key,
+                index=index+5000
+            )
+        )
+    )
+
 
 @app.lambda_function(name='processor')
 def processor(event, context):

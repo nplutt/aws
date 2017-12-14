@@ -3,7 +3,9 @@
     "dev": {
       "api_gateway_stage": "api",
       "environment_variables": {
-        "BUCKET_NAME": "data-processing-example-nplutt"
+        "BUCKET_NAME": "data-processing-example-nplutt",
+        "ENVIRONMENT": "dev",
+        "STREAM_NAME": "data-processing-example"
       },
       "lambda_memory_size": 1536,
       "iam_role_arn": "arn:aws:iam::562628674386:role/lambda-data-processing-example",

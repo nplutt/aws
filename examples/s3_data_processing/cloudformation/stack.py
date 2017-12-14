@@ -89,7 +89,6 @@ def create_lambda_iam_role(template):
                        'stream/{}'.format(kinesis_params['stream_name'])])
         ],
         Action=[
-            Action('kinesis', 'DescribeStream'),
             Action('kinesis', 'PutRecords')
         ]
     )
