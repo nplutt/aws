@@ -1,0 +1,1 @@
+{"stackTrace": [["/var/task/chalice/app.py", 915, "__call__", "return self.func(event, context)"], ["/var/task/app.py", 50, "ingress", "record = dict(Data=str(uuids[x]),"]], "errorType": "IndexError", "errorMessage": "string index out of range"}

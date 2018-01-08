@@ -89,6 +89,10 @@ def create_lambda_iam_role(template):
                        'stream/{}'.format(kinesis_params['stream_name'])])
         ],
         Action=[
+            Action('kinesis', 'DescribeStream'),
+            Action('kinesis', 'GetRecords'),
+            Action('kinesis', 'GetShardIterator'),
+            Action('kinesis', 'ListStreams'),
             Action('kinesis', 'PutRecords')
         ]
     )
@@ -130,7 +134,8 @@ def create_lambda_iam_role(template):
                 lambda_statement,
                 s3_statement
             ]
-        )
+        ),
+        Roles=[Ref(role)]
     )
     template.add_resource(managed_policy)
 

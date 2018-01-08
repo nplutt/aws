@@ -43,6 +43,9 @@
                         {
                             "Action": [
                                 "kinesis:DescribeStream",
+                                "kinesis:GetRecords",
+                                "kinesis:GetShardIterator",
+                                "kinesis:ListStreams",
                                 "kinesis:PutRecords"
                             ],
                             "Effect": "Allow",
@@ -102,7 +105,12 @@
                         }
                     ],
                     "Version": "2012-10-17"
-                }
+                },
+                "Roles": [
+                    {
+                        "Ref": "LambdaDataProcessingRole"
+                    }
+                ]
             },
             "Type": "AWS::IAM::ManagedPolicy"
         },
