@@ -10,7 +10,7 @@ if __name__ == '__main__':
         for x in range(0, 1000):
             uuid = uuid4()
             uuids.append(uuid)
-            f.write(str(uuid4()) + '\n')
+            # f.write(str(uuid4()) + '\n')
 
         for x in range(0, number_records/number_uuids - 1):
             for u in uuids:
