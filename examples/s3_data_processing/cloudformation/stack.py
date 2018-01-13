@@ -21,10 +21,7 @@ def create_cloudformation_template():
 def create_s3_bucket(template):
     bucket = s3.Bucket(
         'DataProcessingBucketNplutt',
-        BucketName=s3_params['bucket_name'],
-        VersioningConfiguration=s3.VersioningConfiguration(
-            Status='Enabled'
-        )
+        BucketName=s3_params['bucket_name']
     )
     template.add_resource(bucket)
 

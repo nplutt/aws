@@ -4,7 +4,7 @@ s3_params = dict(
 
 kinesis_params = dict(
     stream_name='data-processing-example',
-    shard_count=1
+    shard_count=10
 )
 
 lambda_iam_params = dict(

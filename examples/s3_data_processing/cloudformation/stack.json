@@ -4,10 +4,7 @@
     "Resources": {
         "DataProcessingBucketNplutt": {
             "Properties": {
-                "BucketName": "data-processing-example-nplutt",
-                "VersioningConfiguration": {
-                    "Status": "Enabled"
-                }
+                "BucketName": "data-processing-example-nplutt"
             },
             "Type": "AWS::S3::Bucket"
         },
@@ -149,7 +146,7 @@
         "Stream1": {
             "Properties": {
                 "Name": "data-processing-example",
-                "ShardCount": 1
+                "ShardCount": 10
             },
             "Type": "AWS::Kinesis::Stream"
         }

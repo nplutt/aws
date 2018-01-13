@@ -21,6 +21,9 @@ ENVIRONMENT_NAME = os.environ.get('ENVIRONMENT')
 STREAM_NAME = os.environ.get('STREAM_NAME')
 CONTAINER_ID = str(uuid4())
 
+# 4 shards: Start 1515556667; End 1515557445; Processed 6500; Time 1079 sec; avg 6.024 r/s
+# 10 shards: Start 1515878894; End 1515879838; Processed 30,000; Time 944 sec; avg 31.7 r/s
+
 
 @app.route('/')
 def index():
@@ -49,23 +52,24 @@ def ingress(event, context):
     s3_file = get_file_from_s3(key).splitlines()
     uuids = s3_file[index:]
     records = []
-    num_to_process = 5000 if len(uuids) >= 5000 else len(uuids)
+    num_to_process = 5000 if len(uuids) >= 5000 else len(uuids) - index
 
-    for x in range(index, index + num_to_process):
+    for x in range(0, index + num_to_process):
         uuid = uuids[x]
         s3_key = '{}/{}/{}/{}/{}.txt'.format(uuid[0], uuid[1], uuid[2], uuid[3], uuid)
         record = dict(Data=json.dumps({'s3Key': s3_key}),
                       PartitionKey=str(hash(uuids[x])))
         records.append(record)
 
-        if ((len(records) % 500) == 0 and len(records) > 0) or len(records) == num_to_process:
-            app.log.info('Placing {} records into {} kinesis stream'.format(len(records), STREAM_NAME))
+        if ((len(records) % 200) == 0 and len(records) > 0) or len(records) == num_to_process:
+            app.log.info('Placing {} records into {} kinesis stream.'.format(len(records), STREAM_NAME))
             kinesis.put_records(Records=records,
                                 StreamName=STREAM_NAME)
             records = []
-            sleep(1)  # Sleep 1 second so as to not go over the single kinesis shard write limit of 1000
+            sleep(.1)  # Sleep 1 second so as to not go over the single kinesis shard write limit of 1000
 
     if num_to_process == 5000:
+        app.log.info('Invoking lambda to continue feeding data into kinesis.')
         aws_lambda.invoke(
             FunctionName='data-processing-{}-ingress'.format(ENVIRONMENT_NAME),
             Payload=json.dumps(
@@ -73,7 +77,8 @@ def ingress(event, context):
                     s3Key=key,
                     index=index+5000
                 )
-            )
+            ),
+            InvocationType='Event'
         )
 
 
@@ -112,14 +117,18 @@ def processor(event, context):
     records = event['Records']
 
     for record in records:
-        data = base64.b64decode(record['kinesis']['data'])
-        app.log.info(data)
-        key = json.loads(data)['s3Key']
+        try:
+            data = base64.b64decode(record['kinesis']['data'])
+            key = json.loads(data)['s3Key']
+            body = get_file_from_s3(key)
 
-        body = get_file_from_s3(key)
-        sleep(.1)  # This is here to represent what ever data processing needs to be done
-        put_file_to_s3(key, body)
-        app.log.info('Successfully processed file {}.'.format(key))
+            sleep(.1)  # This is here to represent what ever data processing needs to be done
+
+            put_file_to_s3(key, body)
+            app.log.info('Successfully processed file {}.'.format(key))
+        except Exception as e:
+            app.log.error("Caught exception of {} when trying to process record {}."
+                          .format(e, record))
 
     app.log.info('Container {} ended at {} seconds since epoc'.format(CONTAINER_ID, timegm(gmtime())))
 
@@ -129,13 +138,8 @@ def get_file_from_s3(key):
         s3_file = s3.get_object(Bucket=BUCKET_NAME, Key=key)
         return s3_file['Body'].read()
     except ClientError as e:
-        # error_code = int(e.response['Error']['Code'])
-        # if error_code == 404 or error_code == 403:
-        #     app.log.error('Key {} could not be found in {} S3 bucket received a status code of {}.'
-        #                   .format(key, BUCKET_NAME, error_code))
-        # else:
-        logging.error(e)
-        # raise
+        app.log.error('Error of {} happened when retrieving file {} from bucket {}.'
+                      .format(e, key, BUCKET_NAME))
 
 
 def put_file_to_s3(key, body):
@@ -146,6 +150,5 @@ def put_file_to_s3(key, body):
             Key=key
         )
     except ClientError as e:
-        app.log.error('Error of {} happened when uploading file {} to bucket {}'
+        app.log.error('Error of {} happened when uploading file {} to bucket {}.'
                       .format(e, key, BUCKET_NAME))
-        raise
