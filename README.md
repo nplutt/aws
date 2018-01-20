@@ -21,7 +21,10 @@ $ ./general/s3/artifacts/deploy.sh
 
 ## Examples
 - [Angular Build Pipeline](https://github.com/nplutt/aws/tree/master/examples/angular_pipeline): 
-A Build pipeline that will build and deploy an Angular application and save the build artifacts to S3
+A Build pipeline that will build and deploy an Angular application and save the build artifacts to S3.
+
+- [S3 Data Refactor Using Kiesis & Lambda](https://github.com/nplutt/aws/tree/master/examples/s3_data_processing):
+An example of how Kinesis can be used in combination to parallelize the refactor of file stored in S3.
     
 ## Generic AWS Resources
 - [AWS Certificate Manager](https://github.com/nplutt/aws/tree/master/general/acm)

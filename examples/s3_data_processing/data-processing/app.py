@@ -23,7 +23,8 @@ CONTAINER_ID = str(uuid4())
 
 # 4 shards: Start 1515556667; End 1515557445; Processed 6500; Time 1079 sec; avg 6.024 r/s
 # 10 shards: Start 1515878894; End 1515879838; Processed 30,000; Time 944 sec; avg 31.7 r/s
-
+# 25 shards: Start 1516063497; End 1516063878; Processed 30,000; Time 381 sec; avg 78.7 r/s
+# 50 shards; Start 1516064550; End 1516064776; Processed 30,000; Time 226 sec; avg 132.74 r/s
 
 @app.route('/')
 def index():
@@ -66,7 +67,7 @@ def ingress(event, context):
             kinesis.put_records(Records=records,
                                 StreamName=STREAM_NAME)
             records = []
-            sleep(.1)  # Sleep 1 second so as to not go over the single kinesis shard write limit of 1000
+            sleep(.05)  # Sleep .05 second so as to not go over the single kinesis shard write limit of 1000
 
     if num_to_process == 5000:
         app.log.info('Invoking lambda to continue feeding data into kinesis.')
