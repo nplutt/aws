@@ -1,4 +1,11 @@
-vpc_cidr = '192.168.0.0/20'
+vpc_config = dict(
+    name='test-vpc',
+    cidr_block='192.168.0.0/16',
+    tags=(
+        dict(Name='test-vpc')
+    )
+)
+
 sub_nets = [
     dict(
         region='us-west-2a',
@@ -11,6 +18,27 @@ sub_nets = [
         private_cidr='192.168.4.0/24'
     )
 ]
-private_sub_net = False,
-nat_gateway = False
+
+security_group_config = dict(
+    public=dict(
+        name='PublicSecurityGroup',
+        ingress_rules=[
+            dict(port=22,
+                 cidr_block='0.0.0.0/0'),
+            dict(port=443,
+                 cidr_block='0.0.0.0/0'),
+            dict(port=80,
+                 cidr_block='0.0.0.0/0')
+        ]
+    ),
+    private=dict(
+        name='PrivateSecurityGroup',
+        ingress_rules=[
+            dict(port=5432)
+        ]
+    )
+)
+
+private_sub_net = True
+nat_gateway = True
 

@@ -2,6 +2,18 @@
     "AWSTemplateFormatVersion": "2010-09-09",
     "Description": "AWS cloud formation script template.at creates a VPC with a NAT Gg",
     "Outputs": {
+        "NatEip0": {
+            "Description": "Nat Elastic IP",
+            "Value": {
+                "Ref": "NatEip0"
+            }
+        },
+        "NatEip1": {
+            "Description": "Nat Elastic IP",
+            "Value": {
+                "Ref": "NatEip1"
+            }
+        },
         "PrivateSubnet0": {
             "Description": "Subnet Id",
             "Value": {
@@ -12,6 +24,12 @@
             "Description": "Subnet Id",
             "Value": {
                 "Ref": "PrivateSubnetCidr1"
+            }
+        },
+        "PublicSecurityGroupId": {
+            "Description": "Public Security Group Id",
+            "Value": {
+                "Ref": "PublicSecurityGroup"
             }
         },
         "PublicSubnet0": {
@@ -55,7 +73,7 @@
             "Type": "String"
         },
         "VPCCIDR": {
-            "Default": "192.168.0.0/20",
+            "Default": "192.168.0.0/16",
             "Description": "The IP address space for this VPC, in CIDR notation",
             "Type": "String"
         }
@@ -63,6 +81,34 @@
     "Resources": {
         "InternetGateway": {
             "Type": "AWS::EC2::InternetGateway"
+        },
+        "Nat0": {
+            "Properties": {
+                "AllocationId": {
+                    "Fn::GetAtt": [
+                        "NatEip0",
+                        "AllocationId"
+                    ]
+                },
+                "SubnetId": {
+                    "Ref": "PublicSubnet0"
+                }
+            },
+            "Type": "AWS::EC2::NatGateway"
+        },
+        "Nat1": {
+            "Properties": {
+                "AllocationId": {
+                    "Fn::GetAtt": [
+                        "NatEip1",
+                        "AllocationId"
+                    ]
+                },
+                "SubnetId": {
+                    "Ref": "PublicSubnet1"
+                }
+            },
+            "Type": "AWS::EC2::NatGateway"
         },
         "NatAttachment": {
             "Properties": {
@@ -74,6 +120,42 @@
                 }
             },
             "Type": "AWS::EC2::VPCGatewayAttachment"
+        },
+        "NatEip0": {
+            "Properties": {
+                "Domain": "vpc"
+            },
+            "Type": "AWS::EC2::EIP"
+        },
+        "NatEip1": {
+            "Properties": {
+                "Domain": "vpc"
+            },
+            "Type": "AWS::EC2::EIP"
+        },
+        "NatRoute0": {
+            "Properties": {
+                "DestinationCidrBlock": "0.0.0.0/0",
+                "NatGatewayId": {
+                    "Ref": "Nat0"
+                },
+                "RouteTableId": {
+                    "Ref": "PrivateRouteTable0"
+                }
+            },
+            "Type": "AWS::EC2::Route"
+        },
+        "NatRoute1": {
+            "Properties": {
+                "DestinationCidrBlock": "0.0.0.0/0",
+                "NatGatewayId": {
+                    "Ref": "Nat1"
+                },
+                "RouteTableId": {
+                    "Ref": "PrivateRouteTable1"
+                }
+            },
+            "Type": "AWS::EC2::Route"
         },
         "PrivateRouteAssociation0": {
             "Properties": {
@@ -113,12 +195,43 @@
             },
             "Type": "AWS::EC2::RouteTable"
         },
+        "PrivateSecurityGroup": {
+            "Properties": {
+                "GroupDescription": "test-vpc private security group",
+                "SecurityGroupIngress": [
+                    {
+                        "FromPort": 5432,
+                        "IpProtocol": "tcp",
+                        "SourceSecurityGroupId": {
+                            "Ref": "PublicSecurityGroup"
+                        },
+                        "ToPort": 5432
+                    }
+                ],
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": "private test-vpc security group"
+                    }
+                ],
+                "VpcId": {
+                    "Ref": "VPC"
+                }
+            },
+            "Type": "AWS::EC2::SecurityGroup"
+        },
         "PrivateSubnet0": {
             "Properties": {
                 "CidrBlock": {
                     "Ref": "PrivateSubnetCidr0"
                 },
                 "MapPublicIpOnLaunch": "false",
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": "Private Subnet 0"
+                    }
+                ],
                 "VpcId": {
                     "Ref": "VPC"
                 }
@@ -131,6 +244,12 @@
                     "Ref": "PrivateSubnetCidr1"
                 },
                 "MapPublicIpOnLaunch": "false",
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": "Private Subnet 1"
+                    }
+                ],
                 "VpcId": {
                     "Ref": "VPC"
                 }
@@ -199,13 +318,54 @@
             },
             "Type": "AWS::EC2::RouteTable"
         },
+        "PublicSecurityGroup": {
+            "Properties": {
+                "GroupDescription": "test-vpc public security group",
+                "SecurityGroupIngress": [
+                    {
+                        "CidrIp": "0.0.0.0/0",
+                        "FromPort": 22,
+                        "IpProtocol": "tcp",
+                        "ToPort": 22
+                    },
+                    {
+                        "CidrIp": "0.0.0.0/0",
+                        "FromPort": 443,
+                        "IpProtocol": "tcp",
+                        "ToPort": 443
+                    },
+                    {
+                        "CidrIp": "0.0.0.0/0",
+                        "FromPort": 80,
+                        "IpProtocol": "tcp",
+                        "ToPort": 80
+                    }
+                ],
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": "public test-vpc security group"
+                    }
+                ],
+                "VpcId": {
+                    "Ref": "VPC"
+                }
+            },
+            "Type": "AWS::EC2::SecurityGroup"
+        },
         "PublicSubnet0": {
             "Properties": {
                 "AvailabilityZone": "us-west-2a",
                 "CidrBlock": {
                     "Ref": "PublicSubnetCidr0"
                 },
-                "MapPublicIpOnLaunch": "true",
+                "MapPublicIpOnLaunch": "false",
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": "Public Subnet 0"
+                    }
+                ],
                 "VpcId": {
                     "Ref": "VPC"
                 }
@@ -218,7 +378,13 @@
                 "CidrBlock": {
                     "Ref": "PublicSubnetCidr1"
                 },
-                "MapPublicIpOnLaunch": "true",
+                "MapPublicIpOnLaunch": "false",
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": "Public Subnet 1"
+                    }
+                ],
                 "VpcId": {
                     "Ref": "VPC"
                 }
@@ -229,7 +395,13 @@
             "Properties": {
                 "CidrBlock": {
                     "Ref": "VPCCIDR"
-                }
+                },
+                "Tags": [
+                    {
+                        "Key": "Name",
+                        "Value": "test-vpc"
+                    }
+                ]
             },
             "Type": "AWS::EC2::VPC"
         }
