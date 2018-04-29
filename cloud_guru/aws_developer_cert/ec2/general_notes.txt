@@ -80,4 +80,58 @@ Volume Types
 - Magnetic Standard
     * Lowest cost bootable EBS volume type
 
+Encrypted Volume Notes
+========================
+Can't encrypt root volumes by default, can encrypt all additional volumes though.
+
+EC2 Lab Summary
+========================
+- Termination protection is turned off by default
+- On EBS backed instance the default action is for the root ebs volume to be 
+  deleted when the isnatce is terminated.
+- EBS root volumes of your default AMI cannot be encrypted. You can use 3rd party
+  tools to encrypt the root volume, or this can be done when creating an AMI in
+  the aws console or API.
+- Additional volumes can be encrypted
+
+
+EBS Lab Notes
+========================
+- Volumes exist on EBS
+    * Virtual hard disk
+- Snapshots are stored in S3
+- Snapshots are a point in time copy of a volume
+- Snapshots are incremental - this means that only the blocks that have
+  changed since your last snapshot are moved to S3.
+- To create a snapshot for EBS volumes that serve as root devices, you
+  should stop the instance before taking the snapshot.
+    * You can take one when the instance is running as well.
+- You can create AMI's from both volumes and snapshots
+- You can change EBS volume sizes on the fly, including changing the size
+  and storage type.
+- Volumes will always be in the same availability zone a the ec2 instance.
+- To move an ec2 volume from one AZ/Region to another, take a snap or image
+  of it, then copy it in the new region
+- Snapshots of encrypted volums are encrypted automatically
+- Volumes restored from encrypted snapshots are encrypted automatically
+- You can share snapshots, but only if they are unencrypted
+    * These snapshots can be shared with other AWS accounts or made public
+
+EFS Lab Notes
+========================
+- Amazon's elastic file system. Storage capacity is elastic and will grow
+  and shrink automatically as you add and remove files.
+- Supports Network File System version 4 (NSFv4) protocol
+- You only pay for what you use
+- Can scale up to petabytes
+- Can support thousandes of concurrent NFS connections
+- Data is stored across multiple AZ's within a region
+- Read After Write Consistency
+
+
+
+
+
+
+
 
