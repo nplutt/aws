@@ -128,10 +128,11 @@ EFS Lab Notes
 - Data is stored across multiple AZ's within a region
 - Read After Write Consistency
 
-
-
-
-
-
+CLI Command Notes
+========================
+These are commands that you need to know for the test:
+- aws ec2 describe-instances //Lists all instances
+- aws ec2 describe-images //Lists all images that instances can be created from
+- aws ec2 run-instances  //Starts an instance
 
 
