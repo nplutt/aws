@@ -135,4 +135,6 @@ These are commands that you need to know for the test:
 - aws ec2 describe-images //Lists all images that instances can be created from
 - aws ec2 run-instances  //Starts an instance
 
-
+EC2 Metadata
+========================
+Get all metadata from `curl http://169.254.169.254/latest/meta-data/`

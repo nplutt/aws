@@ -1,0 +1,9 @@
+#!/bin/bash
+
+# This is a bash script that manages the setup of an apache 
+# web server
+yum update -y
+yum install httpd -y
+service httpd start
+chkconfig httpd on
+aws s3 cp s3://nickplutt.com/index.html /var/www/html/index.html
